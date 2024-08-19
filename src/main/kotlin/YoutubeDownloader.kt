@@ -23,7 +23,7 @@ class YoutubeDownloader {
             throw Exception("Yt-dlp executable not found")
         }
 
-        private fun downloadVideo(videoUrl: String, title: String, outputPath: String) {
+        private fun downloadVideo(videoUrl: String, title: String, outputPath: String, logger: Logger? = null) {
             println("\nAttempting to download $title.mp3")
             try {
                 val ytDlpPath = getExecutablePath()
@@ -49,6 +49,7 @@ class YoutubeDownloader {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                logger?.logException(e)
             }
         }
 
@@ -68,7 +69,7 @@ class YoutubeDownloader {
                     logger.logException(java.lang.Exception("URL for song $song not found"))
 
                 }else {
-                    downloadVideo(songUrl, song, output)
+                    downloadVideo(songUrl, song, output, logger)
                 }
             }
         }
