@@ -1,16 +1,27 @@
 package com.guayaba.youtubeMusicDownload
 
 import com.guayaba.youtubeMusicDownload.YoutubeDownloader.Companion.downloadSongsFromFile
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 
-fun main() {
-    println("please insert the path for the song list (must be .txt file): ")
-    val filePath = readln()
-    println("please insert the output path for the songs: ")
-    var outputPath = readln()
-
+suspend fun main() {
     val logger = Logger("application.log")
-    downloadSongsFromFile(filePath, outputPath, logger)
+
+    println("please insert the working directory (must be contain a list.txt file with the song names): ")
+
+    val filePath = readln()
+    try {
+        val deferred = AsyncManager.scope.async {
+            downloadSongsFromFile(filePath, logger)
+        }
+        deferred.await()
+    } catch (_: Exception) {
+
+    } finally {
+        logger.close()
+    }
+
 }
 
 

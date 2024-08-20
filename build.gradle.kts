@@ -19,6 +19,7 @@ java {
 dependencies {
     testImplementation(kotlin("test"))
     implementation("it.skrape:skrapeit:1.2.2")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 }
 
 tasks.test {
