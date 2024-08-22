@@ -1,7 +1,5 @@
 package com.guayaba.youtubeMusicDownload
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.guayaba.youtubeMusicDownload.UrlScraper.Companion.findVideoUrl
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.withPermit

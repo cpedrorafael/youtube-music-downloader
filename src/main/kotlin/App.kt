@@ -20,7 +20,6 @@ suspend fun main() {
     } finally {
         logger.close()
     }
-
 }
 
 
