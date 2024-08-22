@@ -13,7 +13,7 @@ This application uses `yt-dlp` to download music from YouTube in MP3 format.
       Song w - Artist 4
       ```
 
-2. Run the application and insert the `list.txt` file path, as well as the output folder for the songs.
+2. Run the application and insert the path to the directory where the `list.txt` file is.
 
 Enjoy your music! :)
 
