@@ -1,5 +1,7 @@
 package com.guayaba.youtubeMusicDownload
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.guayaba.youtubeMusicDownload.UrlScraper.Companion.findVideoUrl
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.withPermit
@@ -26,18 +28,16 @@ class YoutubeDownloader {
         }
 
         private fun downloadVideo(videoUrl: String, title: String, outputPath: String, logger: Logger? = null) {
-            println("\nAttempting to download $title.mp3")
+            println("\nAttempting to download $title")
             try {
                 val ytDlpPath = getExecutablePath()
-                // Format the output filename directly in Kotlin using the title variable
-                val outputFile = "$outputPath%s.%%(ext)s".format(title.replace("/", "")) // replace slash for filename safety
                 val ytDlpCmd = arrayOf(
-                    ytDlpPath, videoUrl,
+                    ytDlpPath,
                     "-f", "ba", // Best audio
                     "-x", // Extract audio only
                     "--audio-format", "mp3", // Convert to mp3
                     videoUrl,
-                    "-o", outputFile
+                    "-o", "$outputPath%(title)s.%(ext)s"
                 )
                 val runtime = Runtime.getRuntime()
                 val process = runtime.exec(ytDlpCmd)
@@ -58,31 +58,32 @@ class YoutubeDownloader {
         private fun readLinesFromFile(filePath: String): List<String> {
             return File(filePath).readLines()
         }
+
         suspend fun downloadSongsFromFile(workingDir: String, logger: Logger) {
 
             var outputPath = workingDir
-            if(workingDir.last() == '/') {
+            if (workingDir.last() == '/') {
                 outputPath = outputPath.substring(workingDir.indices)
             }
 
             val listFile = File("$outputPath/list.txt")
 
-            if(!listFile.exists()){
+            if (!listFile.exists()) {
                 throw IllegalStateException("list.txt file cannot be found in directory")
             }
 
             val songs = readLinesFromFile(listFile.absolutePath)
 
             val jobs = songs.map { song ->
-                 AsyncManager.scope.launch {
-                     AsyncManager.semaphore.withPermit {
-                         val songUrl = findVideoUrl(song)
-                         if(songUrl.isNullOrEmpty()) {
-                             logger.logException(java.lang.Exception("URL for song $song not found"))
-                         }else {
-                             downloadVideo(songUrl, song, "$outputPath/", logger)
-                         }
-                     }
+                AsyncManager.scope.launch {
+                    AsyncManager.semaphore.withPermit {
+                        val songUrl = findVideoUrl(song)
+                        if (songUrl.isNullOrEmpty()) {
+                            logger.logException(java.lang.Exception("URL for song $song not found"))
+                        } else {
+                            downloadVideo(songUrl, song, "$outputPath/", logger)
+                        }
+                    }
                 }
             }
 
